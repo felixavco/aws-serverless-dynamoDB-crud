@@ -35,13 +35,39 @@ export default {
     return await db.scan(defaultParams).promise();
   },
 
-  update: async (updatedUser: Partial<IUser>) => {
+  update: async (id: string, data: any) => {
+    let expression = '';
+    let attributes = {};
 
+    const keys = Object.keys(data);
+    keys.forEach((key, i) => {
+      expression += `${key} = :${key}${i + 1 < keys.length ? ',' : ''}`;
+    });
+
+    for (let [key, value] of Object.entries(data)) {
+      attributes[`:${key}`] = value;
+    };
+
+    const params = {
+      ...defaultParams,
+      Key: { id },
+      ConditionExpression: 'attribute_exists(id)',
+      UpdateExpression: `SET ${expression}`,
+      ExpressionAttributeValues: attributes,
+      // UpdateExpression: 'SET email = :email, userName = :userName',
+      // ExpressionAttributeValues: {
+      //   ':email': data.email,
+      //   ':userName': data.userName
+      // },
+      ReturnValues: 'ALL_NEW'
+    }
+
+    return await db.update(params).promise();
   },
 
-  delete: async (key) => {
+  delete: async (key: string) => {
     const params = {
-      ...defaultParams, 
+      ...defaultParams,
       Key: {
         id: key
       }

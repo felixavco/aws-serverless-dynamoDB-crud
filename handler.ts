@@ -14,6 +14,12 @@ export const getUser: APIGatewayProxyHandler = async (request) => {
   return await userService.getOne(id);
 }
 
+export const updateUser: APIGatewayProxyHandler = async (request) => {
+  const body = JSON.parse(request.body);
+  const id = request.pathParameters.id;
+  return await userService.update(id, body);
+}
+
 export const deleteUser: APIGatewayProxyHandler = async (request) => {
   const id = request.pathParameters.id;
   return await userService.deleteOne(id);

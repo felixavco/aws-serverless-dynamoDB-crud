@@ -28,7 +28,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:xxxxxxxxxxxxxx:table/usersTable"
+      Resource: "arn:aws:dynamodb:xxxxxxxxxxxxxx:table/usersTable" #replace with dynamo table arn
 
   apiGateway:
     minimumCompressionSize: 1024
@@ -53,6 +53,12 @@ functions:
     events:
       - http:
           method: GET
+          path: users/{id}
+  updateUser:
+    handler: handler.updateUser
+    events:
+      - http:
+          method: PUT
           path: users/{id}
   deleteUser:
     handler: handler.deleteUser

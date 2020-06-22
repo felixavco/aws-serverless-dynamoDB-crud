@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export interface IUser {
   id: string;
-  name: string;
+  userName: string;
   email?: string,
   createdAt: string,
 }
@@ -25,8 +25,8 @@ const response = (data: any, statusCode = 200, message?: string) => {
 export const userService = {
   create: async (body) => {
 
-    if (!body.email || !body.name) {
-      return response(null, 400, 'missing email or name');
+    if (!body.email || !body.userName) {
+      return response(null, 400, 'missing email or userName');
     }
     const newUser: IUser = {
       id: uuidv4(),
@@ -37,7 +37,7 @@ export const userService = {
       const data = await dynamo.create(newUser);
       return response(data, 201);
     } catch (error) {
-      response(error.toString(), 500)
+      response(error, 500)
     }
 
   },
@@ -47,7 +47,7 @@ export const userService = {
       const users = await dynamo.scan();
       return response(users);
     } catch (error) {
-      response(error.toString(), 500)
+      response(error, 500)
     }
 
   },
@@ -63,9 +63,18 @@ export const userService = {
       }
       return response(user);
     } catch (error) {
-      response(error.toString(), 500);
+      response(error, 500);
     }
 
+  },
+
+  update: async (id:string, body: any) => {
+    try {
+      const updated = await dynamo.update(id, body);
+      return response(updated);
+    } catch (error) {
+      response(error, 500)
+    }
   },
 
   deleteOne: async (id: string) => {
@@ -77,7 +86,7 @@ export const userService = {
       const data = await dynamo.delete(id);
       return response(data)
     } catch (error) {
-      response(error.toString(), 500);
+      response(error, 500);
     }
-  }
+  },
 }
